@@ -1,8 +1,10 @@
-/*global isc */
+/*global define, isc */
+
 /**
  * Obtiene la jerarquía de clases ISC definidas.
  */
-define(function () {
+define(['underscore'], function (_) {
+    'use strict';
 
     function classNameInfo(classObject) {
         return {
@@ -12,15 +14,12 @@ define(function () {
     }
 
     function classNameInfosArray() {
-        var pname,
-            pvalue,
-            result = [];
-        for (pname in isc) {
-            pvalue = isc[pname];
+        var result = [];
+        _.forOwn(isc, function (pvalue) {
             if (isc.isA.ClassObject(pvalue)) {
                 result.push( classNameInfo(pvalue) );
             }
-        }
+        });
         return result;
     }
 
