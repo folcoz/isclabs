@@ -26,6 +26,8 @@ var isc_useSimpleNames = false,
 
 // Define application global namespace
 var APPINIT = (function (window, document, undefined) {
+    'use strict';
+
     var app = {
         DEFAULT_LOCALE: "es"
     };
@@ -74,7 +76,7 @@ var APPINIT = (function (window, document, undefined) {
                     script.onreadystatechange = null;
                     callback();
                 }
-            }
+            };
         }
     }
 
@@ -107,7 +109,9 @@ var APPINIT = (function (window, document, undefined) {
     function getQueryParams() {
         var query = getQuery(),
             params;
-        if (query === "") return {};
+        if (query === "") {
+            return {};
+        }
         params = parseParams(query);
         app.utils.getQueryParams = function () {
             return params;
@@ -124,7 +128,9 @@ var APPINIT = (function (window, document, undefined) {
     function getFragmentParams() {
         var fragment = getFragment(),
             params;
-        if (fragment === "") return {};
+        if (fragment === "") {
+            return {};
+        }
         params = parseParams(fragment);
         app.utils.getFragmentParams = function () {
             return params;
@@ -249,6 +255,7 @@ var APPINIT = (function (window, document, undefined) {
 
 // Inicialización tras carga de SmartClient
 APPINIT.init = function () {
+    'use strict';
     this.loadISCLocale();
     this.loadMainModule();
 };

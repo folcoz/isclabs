@@ -1,7 +1,10 @@
+/*global define, isc */
+
 /**
  * Eventos que han de ser controlados globalmente por la aplicación.
  */
 define(['signals', 'underscore'], function (Signal, _) {
+    'use strict';
 
     var events = {
         labSelected: new Signal(),
@@ -12,7 +15,9 @@ define(['signals', 'underscore'], function (Signal, _) {
     // ========================================================================
 
     function createEvent(eventName) {
-        if (eventName in events) return false;
+        if (eventName in events) {
+            return false;
+        }
         events[eventName] = new Signal();
         return true;
     }

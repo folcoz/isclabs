@@ -1,3 +1,5 @@
+/*global define, isc */
+
 /**
  * base/rpc
  *
@@ -7,6 +9,7 @@
  * - jQuery
  */
 define(['when'], function (when) {
+    'use strict';
 
 //    isc.RPCManager.promptStyle = "dialog";
 //    isc.RPCManager.showPrompt = true;

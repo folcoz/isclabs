@@ -1,11 +1,13 @@
-/*global isc */
+/*global define, isc, require, APPINIT, Highcharts */
+/*jshint evil:true */
+
 /**
  * Modulo: labs/labs
  * Contiene toda la funcionalidad de los distintos laboratorios / demos de SmartClient
  * utilizados en la aplicacion.
  */
-define(["i18n", "model/models", "base/config", "moment", "when", "base/ui", "base/events"],
-    function (i18n, models, config, moment, when, ui, events) {
+define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "base/ui", "base/events"], function (i18n, _, models, config, moment, when, ui, events) {
+    'use strict';
 
     var module = {};
 
@@ -51,7 +53,7 @@ define(["i18n", "model/models", "base/config", "moment", "when", "base/ui", "bas
                     };
                     this.cellDoubleClick = function (record, rowNum, colNum) {
                         this.propiedadClick(record);
-                    }
+                    };
                 }
             };
         return isc.ClassFactory.defineClass("AppGridPropiedades", isc.ListGrid).addProperties(gridPropiedadesDef);
@@ -442,7 +444,7 @@ define(["i18n", "model/models", "base/config", "moment", "when", "base/ui", "bas
                 click: function () {
                     events.externalSiteRequested.dispatch(this.url);
                 }
-            }
+            };
         };
         var externalSitesViewDef = {
             width: "100%",
@@ -657,7 +659,7 @@ define(["i18n", "model/models", "base/config", "moment", "when", "base/ui", "bas
                         {name: "className", title: i18n.treeDemo.classNameTitle, treeField: true}
                     ]
                 });
-            treeGrid.sort("className", "ascending")
+            treeGrid.sort("className", "ascending");
             return treeGrid;
         },
 
@@ -880,7 +882,9 @@ define(["i18n", "model/models", "base/config", "moment", "when", "base/ui", "bas
                     width: "50%"
                 },
                 createLabel: function () {
-                    if (dynLabel) return;
+                    if (dynLabel) {
+                        return;
+                    }
                     var origin = labLayout.toolbar.getPageRect();
                     dynLabel = isc.Label.create({
                         left: origin[0],
@@ -1258,8 +1262,7 @@ define(["i18n", "model/models", "base/config", "moment", "when", "base/ui", "bas
                 });
                 return tbar;
             };
-            var grid,
-                toolbar;
+            var toolbar;
             var layout = isc.VStack.create({
                 autoDraw: false,
                 width: "100%",

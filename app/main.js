@@ -1,5 +1,6 @@
-
+/*global require, isc */
 require(['i18n', 'base/all', 'presenter/presenters', 'labs/labs', 'labs/widgets'], function (i18n, base, presenters, labs, widgets) {
+    'use strict';
 
     isc.Page.setTitle(i18n.appname);
 

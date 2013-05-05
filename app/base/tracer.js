@@ -1,10 +1,13 @@
-/*global define, isc */
+/*global define, isc, console */
+
 /**
  * tracer es un módulo para trazar en la consola de isc
  * las llamadas a los métodos de un objeto.
  * Dependencias implícitas: isc
  */
 define(function () {
+    'use strict';
+
     var PAD = "    ",
         module,
         level = 0;
@@ -60,7 +63,9 @@ define(function () {
     }
 
     function wrapInTracerFunc (obj, objName, fname, fn) {
-        if (fn && fn.isTracer) return;
+        if (fn && fn.isTracer) {
+            return;
+        }
 
         var tracerFunc = function () {
             goingIn(objName, fname);
@@ -81,7 +86,9 @@ define(function () {
     }
 
     function trace(obj, objId) {
-        if (typeof obj !== "object") return obj;
+        if (typeof obj !== "object") {
+            return obj;
+        }
 
         var originales = funciones(obj),
             objName = objId || obj.ID || obj.name || "<unidentified>",

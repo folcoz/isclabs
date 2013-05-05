@@ -1,7 +1,10 @@
+/*global define, isc */
+
 /**
  * Rutinas de utilidad de la interfaz de usuario.
  */
 define(['underscore'], function (_) {
+    'use strict';
 
     var module = {};
 

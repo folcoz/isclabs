@@ -1,7 +1,10 @@
+/*global define, isc, APPINIT */
+
 /**
  * Modulo de configuracion por entornos
  */
 define(['data/config', 'base/rpc', 'when'], function (configData, rpc, when) {
+    'use strict';
 
     var environmentName = APPINIT.utils.getAllParams().config || 'prod';
 
@@ -67,7 +70,7 @@ define(['data/config', 'base/rpc', 'when'], function (configData, rpc, when) {
 
     module.getUserInfo = function () {
         return _userinfo;
-    }
+    };
 
     // ****
 

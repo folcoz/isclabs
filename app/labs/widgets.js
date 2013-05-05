@@ -1,7 +1,11 @@
+/*global define, isc */
+
 /**
  * Módulo para explorar modos de implementar widgets de SmartClient
  */
 define(['exports'], function (exports) {
+    'use strict';
+
     // Las variables y funciones del módulo son privadas
     // al módulo (salvo las exportadas explícitamente) y
     // pueden actuar como "statics" de varias clases
