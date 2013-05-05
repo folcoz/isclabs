@@ -1,0 +1,35 @@
+isc.ClassFactory.defineClass("MyPresenter", isc.Class).addProperties({
+
+    init: function () {
+        this.Super("init", arguments);
+
+        this.view.presenter = this;
+    },
+
+    run: function () {
+        this.cargarDatos();
+    },
+
+    borrarDatos: function () {
+        this.view.clearData();
+    },
+
+    cargarDatos: function () {
+        this.view.showWait();
+        var that = this;
+        this.service.fetchSomeData(function (data) {
+            that.data = data;
+            that.view.setData(data);
+            that.view.hideWait();
+        });
+    }
+});
+
+var presenter = isc.MyPresenter.create({
+    service: service,
+    view: view
+});
+presenter.run();
+
+// Debe retornarse el objeto 'view' para que funcione el laboratorio!
+return view;

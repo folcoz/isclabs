@@ -1,0 +1,82 @@
+isc.ClassFactory.defineClass("MyView", isc.VLayout).addProperties({
+    autoDraw:false,
+    width:300,
+    height:300,
+    showEdges:true,
+    edgeMarginSize:10,
+    canDragResize:true,
+    keepInParentRect: true,
+    minWidth: 220,
+
+    showWait:function () {
+        isc.Hover.show("Cargando. Por favor espere...", {moveWithMouse:true});
+    },
+
+    hideWait:function () {
+        isc.Hover.hide();
+    },
+
+    gridDefaults: {
+        _constructor: isc.ListGrid,
+        autoDraw:false,
+        width:"100%", height:"*",
+        leaveScrollbarGap:false,
+        selectionAppearance:"checkbox",
+        fields:[
+            {name:'nombre', title:"Nombre"},
+            {name:'index', title:"Indice Aleatorio", type:"integer"}
+        ]
+    },
+    buttonBarDefaults: {
+        _constructor: isc.HLayout,
+        autoDraw:false,
+        height:40,
+        defaultLayoutAlign:"center",
+        align:"center",
+        layoutMargin:0,
+        membersMargin:8,
+        backgroundColor: "white",
+        canDragReposition: true,
+        dragTarget: 'parent'
+    },
+    removeButtonDefaults: {
+        _constructor: isc.Button,
+        autoParent: "buttonBar",
+        autoDraw: false,
+        title: "Borrar"
+    },
+    reloadButtonDefaults: {
+        _constructor: isc.Button,
+        autoParent: "buttonBar",
+        autoDraw: false,
+        title: "Recargar"
+    },
+
+    initWidget:function () {
+        var that = this;
+        this.Super("initWidget", arguments);
+
+        this.addAutoChild("grid", {data: this.data});
+        this.addAutoChild("buttonBar", {});
+        this.addAutoChild("removeButton", {
+            click: function () {
+                that.presenter.borrarDatos();
+            }
+        });
+        this.addAutoChild("reloadButton", {
+            click: function () {
+                that.presenter.cargarDatos();
+            }
+        });
+    },
+
+    clearData:function () {
+        this.grid.setData([]);
+    },
+
+    setData:function (data) {
+        this.grid.setData(data);
+    }
+});
+
+var view = isc.MyView.create({});

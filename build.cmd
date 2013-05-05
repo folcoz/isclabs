@@ -1,0 +1,1 @@
+node ..\r.js -o name=main out=app/main.min.js baseUrl=app mainConfigFile=app/init.js paths.i18n=empty: paths.underscore=empty:

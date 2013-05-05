@@ -1,0 +1,20 @@
+isc.ClassFactory.defineClass("MyService", isc.Class).addProperties({
+
+    _randomIndex: function (n) {
+        return Math.ceil(n * Math.random() * Math.PI) * 1234;
+    },
+
+    fetchSomeData: function (callback) {
+        var that = this;
+        isc.Timer.setTimeout(function () {
+            var result = [];
+            for (var i=0; i<500; i++) {
+                result.push({nombre: "Item nº " + (i+1), index: that._randomIndex(i+1)});
+            }
+            callback(result);
+        }, 100);
+    }
+
+});
+
+var service = isc.MyService.create({});
