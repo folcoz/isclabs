@@ -1,7 +1,10 @@
+/*global define, isc */
+
 /**
  * DataSources
  */
 define(['base/config'], function (config) {
+    'use strict';
 
     var module = {};
 

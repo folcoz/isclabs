@@ -1,8 +1,11 @@
+/*global define, isc */
+
 /**
  * Define un módulo con clases y funciones relacionados con los modelos
  * utilizados por la aplicación.
  */
 define(['underscore', 'i18n', 'model/ds', 'base/rpc', 'model/classhierarchy'], function (_, i18n, ds, rpc, hier) {
+    'use strict';
 
     var module = {};
 
