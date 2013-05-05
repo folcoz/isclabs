@@ -1,7 +1,10 @@
+/*global define, isc */
+
 /**
  * Contiene los presenters de la aplicación
  */
-define(['view/mainui', 'labs/labs', 'base/events', 'underscore'], function (mainUI, labsmodule, events, _) {
+define(['view/mainui', 'labs/labs', 'base/events'], function (mainUI, labsmodule, events) {
+    'use strict';
 
     //events.createEvent("labSelected");
 
@@ -24,7 +27,6 @@ define(['view/mainui', 'labs/labs', 'base/events', 'underscore'], function (main
             },
 
             run: function () {
-                var that = this;
                 this.view = mainUI.buildMainUI({
                     presenter: this,
                     userinfo: this.userinfo,
@@ -34,11 +36,6 @@ define(['view/mainui', 'labs/labs', 'base/events', 'underscore'], function (main
                     }
                 });
                 this.view.show();
-
-//                this.view.someLabRequested = function (e, eventInfo) {
-//                    that.selectLabByIndex(eventInfo.index);
-//                };
-
             },
 
             createNewLab: function (lab, labContainer) {
@@ -59,7 +56,6 @@ define(['view/mainui', 'labs/labs', 'base/events', 'underscore'], function (main
 
             labSelected: function (lab, state) {
                 var content = this.view.mainBody.mainContent,
-                    nav = this.view.mainBody.mainNav,
                     labContainer = content.pane;
 
                 if (state) {
