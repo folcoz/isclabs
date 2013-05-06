@@ -1,8 +1,11 @@
+/*global define, isc */
+
 /**
  * Módulo IU principal.
  * Define controles/layouts y funciones relacionadas.
  */
 define(['underscore', 'i18n'], function (_, i18n) {
+    'use strict';
 
     var module = {};
 
@@ -194,7 +197,9 @@ define(['underscore', 'i18n'], function (_, i18n) {
             },
 
             setLabs: function (labs) {
-                if (!labs) return;
+                if (!labs) {
+                    return;
+                }
                 if (this.pane) {
                     this.pane.setData(labs);
                 }

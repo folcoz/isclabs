@@ -1,7 +1,10 @@
+/*global define */
+
 /**
  * Mensajes internacionalizados: español
  */
 define(function () {
+    'use strict';
 
     var module = {
         locale: "es",

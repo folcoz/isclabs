@@ -1,7 +1,11 @@
+/*global require */
+
 /**
  * Vista cargada dinámicamente por un ViewLoader
  */
 (function () {
+    'use strict';
+
     var labs = require("labs/labs"),
         models = require("model/models"),
         config = require("base/config");

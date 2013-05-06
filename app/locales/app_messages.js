@@ -1,7 +1,10 @@
+/*global define */
+
 /**
  * Mensajes internacionalizados: inglés
  */
 define(function () {
+    'use strict';
 
     var module = {
         locale: "en",
@@ -96,6 +99,8 @@ define(function () {
         }
 
     };
+
+    Date.setInputFormat("MDY");
 
     return module;
 });
