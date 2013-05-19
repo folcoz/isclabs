@@ -58,7 +58,7 @@ define(['underscore'], function (_) {
     module.getPresenter = getPresenter;
 
     function superInitWidget(that, argmnts) {
-        var args = argmnts? Array.prototype.slice.call(argmnts, 0) : [];
+        var args = _.isArguments(argmnts)? Array.prototype.slice.call(argmnts, 0) : argmnts;
         that.Super("initWidget", args);
     }
     module.superInitWidget = superInitWidget;

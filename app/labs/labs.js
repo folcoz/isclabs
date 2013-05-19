@@ -48,7 +48,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                     {name:'valor', title:i18nGP.valor_title}
                 ],
                 initWidget:function () {
-                    this.Super("initWidget", arguments);
+                    ui.superInitWidget(this, arguments);
                     this.propiedadClick = this.propiedadClick || function (record) {
                     };
                     this.cellDoubleClick = function (record, rowNum, colNum) {
@@ -115,7 +115,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             },
 
             initWidget: function () {
-                this.Super("initWidget", arguments);
+                ui.superInitWidget(this, arguments);
 
                 // add explanation
                 this.addAutoChild("explanation");
@@ -274,7 +274,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             },
 
             initWidget: function () {
-                this.Super("initWidget", arguments);
+                ui.superInitWidget(this, arguments);
                 this.createForm();
                 this.createPane();
             },
@@ -424,7 +424,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             },
 
             initWidget: function () {
-                this.Super("initWidget", arguments);
+                ui.superInitWidget(this, arguments);
 
                 this.addAutoChildren(["topbar", "mainArea", "sidebar", "contentArea"]);
             }
@@ -479,7 +479,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             },
 
             initWidget: function () {
-                this.Super("initWidget", arguments);
+                ui.superInitWidget(this, arguments);
                 events.externalSiteRequested.add(this.loadExternalSite, this);
                 this.addAutoChild("toolbar", {
                     buttons: [
@@ -573,7 +573,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             },
 
             initWidget: function () {
-                this.Super("initWidget", arguments);
+                ui.superInitWidget(this, arguments);
 
                 this.addAutoChild("grid", {
                     dataSource: this.dataSource
@@ -908,7 +908,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                     }
                 },
                 initWidget: function () {
-                    this.Super("initWidget", arguments);
+                    ui.superInitWidget(this, arguments);
                     this.addAutoChild("descripcion", {});
                     this.addAutoChild("toolbar", {});
                     this.addAutoChild("stateful");
@@ -1270,7 +1270,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                 membersMargin: 8,
 
                 initWidget: function () {
-                    this.Super("initWidget", arguments);
+                    ui.superInitWidget(this, arguments);
                     grid = createGrid();
                     toolbar = createToolbar();
                     this.addMembers([grid, toolbar]);
@@ -1334,7 +1334,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
 
                 initWidget: function () {
                     var chartSize;
-                    this.Super("initWidget", arguments);
+                    ui.superInitWidget(this, arguments);
                     this.chartContainerID = this.ID + "_chart_container";
                     chartSize = "width: " + this.getWidth() + "px; height: " + this.getHeight() + "px;";
                     this.contents = "<div id='" + this.chartContainerID + "' style='" + chartSize + "'></div>";
