@@ -1,7 +1,10 @@
+/*global APPINIT, define */
+
 /**
  * Datos de configuración al arrancar la aplicación
  */
 define(function () {
+    'use strict';
 
     var servidorJavaIsomorphic = "/iscserverlab/isomorphic/";
 

@@ -10,18 +10,11 @@ define(['underscore'], function (_) {
 
     function escapeHTML(htmlString) {
         return _.escape(htmlString);
-//        var div = document.createElement('div');
-//        div.appendChild(document.createTextNode(htmlString));
-//        return div.innerHTML;
     }
     module.escapeHTML = escapeHTML;
 
     function unescapeHTML(escapedHtml) {
         return _.unescape(escapedHtml);
-//        var div = document.createElement('div');
-//        div.innerHTML = escapedHtml;
-//        var child = div.childNodes[0];
-//        return child? child.nodeValue : "";
     }
     module.unescapeHTML = unescapeHTML;
 
@@ -63,6 +56,12 @@ define(['underscore'], function (_) {
         return null;
     }
     module.getPresenter = getPresenter;
+
+    function superInitWidget(that, argmnts) {
+        var args = argmnts? Array.prototype.slice.call(argmnts, 0) : [];
+        that.Super("initWidget", args);
+    }
+    module.superInitWidget = superInitWidget;
 
     return module;
 });

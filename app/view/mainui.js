@@ -4,7 +4,7 @@
  * Módulo IU principal.
  * Define controles/layouts y funciones relacionadas.
  */
-define(['underscore', 'i18n'], function (_, i18n) {
+define(['underscore', 'i18n', 'base/ui'], function (_, i18n, ui) {
     'use strict';
 
     var module = {};
@@ -91,7 +91,8 @@ define(['underscore', 'i18n'], function (_, i18n) {
                 },
 
                 initWidget:function () {
-                    this.Super("initWidget", arguments);
+                    //this.Super("initWidget", arguments);
+                    ui.superInitWidget(this, arguments);
 
                     this.addAutoChild("titleLabel", {
                         contents:this.title || i18n.untitled,
