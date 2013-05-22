@@ -12,3 +12,5 @@ English
 This is a personal learning project of Isomorphic SmartClient (ISC from now on).
 As such it contains code that it is not production-ready in any way. Neither does it try
 to show the best techniques of ISC usage.
+
+:)
