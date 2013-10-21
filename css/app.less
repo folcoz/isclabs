@@ -1,104 +1,109 @@
 
 .apptitle {
-    color: gray;
-    font-size: 12pt;
-    font-weight: bold;
+  color: gray;
+  font-size: 12pt;
+  font-weight: bold;
 }
 
 .username {
-    color: gray;
-    font-weight: bold;
+  color: gray;
+  font-weight: bold;
 }
 
 .sectiontitle {
-    color: #8b0000;
-    font-weight: bold;
-    font-size: 10pt;
-    padding-left: 4px;
+  color: #8b0000;
+  font-weight: bold;
+  font-size: 10pt;
+  padding-left: 4px;
 }
 
 .mainBody {
-    border: 2px solid #d3d3d3;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+  border: 2px solid #d3d3d3;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 .labContainer {
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-bottom: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 8px;
 }
 
 .labExplanation {
-    font-size: 10pt;
+  font-size: 10pt;
 }
 
 .codeEditor,
 .codeEditorFocused {
-    font-family: monospace, Arial;
-    font-size: 9pt;
-    background-color: white;
-    border: 0px;
-    padding-right: 8px;
-    padding-bottom: 4px;
+  font-family: monospace, Arial;
+  font-size: 9pt;
+  background-color: white;
+  border: 0px;
+  padding-right: 8px;
+  padding-bottom: 4px;
 }
 
 .reusableLayout {
-    border: 2px solid gray;
+  border: 2px solid gray;
 }
 
 .topbar {
-    font-weight: bold;
-    background-color: #fff8dc;
-    border-bottom: 1px solid lightgrey;
+  font-weight: bold;
+  background-color: #fff8dc;
+  border-bottom: 1px solid lightgrey;
 }
 
 .sidebar {
-    font-weight: bold;
-    background-color: #f0f8ff;
+  font-weight: bold;
+  background-color: #f0f8ff;
 }
 
 .contentArea {
-    font-weight: bold;
-    background-color: #f0fff0;
+  font-weight: bold;
+  background-color: #f0fff0;
 }
 
 .dynLabel {
-    border: 1px dashed red;
-    background-color: white;
-    font-family: Arial, Verdana, sans-serif;
-    font-size: 11px;
-    font-weight: bold;
-    color: black;
-    opacity: 0.9;
+  border: 1px dashed red;
+  background-color: white;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: black;
+  opacity: 0.9;
 }
 
 .stateful {
-    padding: 8;
-    font-family: Arial, Verdana, sans-serif;
-    font-size: 11px;
+  padding: 8px;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
 }
+
 .statefulDisabled,
 .statefulSelectedDisabled {
-    background-color: #d3d3d3;
-    color: grey;
+  background-color: #d3d3d3;
+  color: grey;
 }
+
 .statefulSelectedDisabled {
-    font-weight: bold;
+  font-weight: bold;
 }
+
 .statefulOver,
 .statefulSelectedOver {
-    background-color: #f0f8ff;
+  background-color: #f0f8ff;
 }
+
 .statefulSelected,
 .statefulSelectedOver,
 .statefulSelectedDown,
 .statefulSelectedDisabled {
-    font-weight: bold;
+  font-weight: bold;
 }
+
 .statefulDown,
 .statefulSelectedDown {
-    background-color: #fff8dc;
+  background-color: #fff8dc;
 }
 
 .labRecordSummaryCell,
@@ -109,27 +114,30 @@
 .labRecordSummaryCellOverDark,
 .labRecordSummaryCellSelectedDark,
 .labRecordSummaryCellSelectedOverDark {
-    border-top: 1px solid #fafafa;
-    border-bottom: 1px solid #f0f0f0;
-    color: black;
-    font-family: Arial, Verdana, sans-serif;
-    font-size: 11px;
-    text-overflow: ellipsis;
-    background-color: lightblue;
+  border-top: 1px solid #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  color: black;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  background-color: lightblue;
 }
+
 .labRecordSummaryCellDark,
 .labRecordSummaryCellOverDark,
 .labRecordSummaryCellSelectedDark,
 .labRecordSummaryCellSelectedOverDark {
-    background-color: darkblue;
-    color: white;
+  background-color: darkblue;
+  color: white;
 }
+
 .labRecordSummaryCellSelectedDark {
-    background-color: darkmagenta;
+  background-color: darkmagenta;
 }
+
 .labRecordSummaryCellOverDark,
 .labRecordSummaryCellSelectedOverDark {
-    background-color: darkorchid;
+  background-color: darkorchid;
 }
 
 .menuButtonSelected,
@@ -142,35 +150,42 @@
 @menuBackgroundOver: #fff8dc;
 
 .appMenuButton {
-    background-color: @menuBackground;
-    font-family: Arial, Verdana, sans-serif;
-    font-size: 11px;
-    border: 3px solid #d3d3d3;
+  background-color: @menuBackground;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 11px;
+  border: 3px solid #d3d3d3;
 }
+
 .appMenuButtonOver {
   .appMenuButton;
   background-color: @menuBackgroundOver;
 }
+
 .appMenuButtonSelected {
   .appMenuButton;
   font-weight: bold;
 }
+
 .appMenuButtonSelectedOver {
   .appMenuButtonSelected;
   background-color: @menuBackgroundOver;
 }
+
 .appMenuButtonDisabled {
   background-color: #d3d3d3;
   color: grey;
 }
+
 .appMenuButtonSelectedDisabled {
   .appMenuButtonDisabled;
   font-weight: bold;
 }
+
 .appMenuButtonDown {
   .appMenuButton;
   border-style: inset;
 }
+
 /*
 .appMenuButtonOver,
 .appMenuButtonSelected,
@@ -190,3 +205,8 @@
     background-color: #fff8dc;
 }
 */
+
+.tachado {
+  text-decoration: line-through;
+  color: gray;
+}

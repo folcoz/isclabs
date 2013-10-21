@@ -27,10 +27,10 @@ var Greeter = (function () {
         this.someone = p;
     }
     Greeter.prototype.greet = function () {
-        return "Hello, " + this.someone.firstname + " " + this.someone.lastname;
+        return Greeter.greet(this.someone);
     };
     Greeter.greet = function greet(person) {
-        return new Greeter(person).greet();
+        return "Hello, " + person.firstname + " " + person.lastname;
     };
     return Greeter;
 })();

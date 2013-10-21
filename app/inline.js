@@ -20,6 +20,7 @@ var app = {
             height: 22,
             autoFit: true,
             title: "Muestra/Oculta otro botón",
+            baseStyle: "buttonRounded",
 
             click: function() {
                 that.addLabelButton.toggle();
@@ -100,8 +101,8 @@ var app = {
         }
 
         if (!formulariosValidos()) {
-            isc.say('Corrija los errores antes de añadir más formularios.');
-            return;
+            //isc.say('Corrija los errores antes de añadir más formularios.');
+            //return;
         }
 
         var form = isc.DynamicForm.create({

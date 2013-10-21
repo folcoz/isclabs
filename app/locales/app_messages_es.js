@@ -30,12 +30,17 @@ define(function () {
             'viewLoaderDemo':"Demo de isc.ViewLoader",
             'treeDemo':"Jerarquía de Clases ISC",
             'sqlTableCRUD':"Mantenimiento de una tabla sql",
+            'springDataSource': "DataSource basado en Spring",
             'dataBinding':"Data Binding (cliente)",
             'dynamicContents':"Demo de Canvas.dynamicContents",
             'treeDataBinding':"Tree Data Binding",
             'windowDemo':"Demo de Window",
             'listGridDemo':"Campos de ListGrid",
-            'eventBusDemo':"Demo bus de eventos"
+            'eventBusDemo':"Demo bus de eventos",
+            'highchartsDemo':"Integración simple con Highcharts",
+            'todoSample':"Lista de cosas por hacer",
+            'wrapperapiSample':"Controlar aplicación host",
+            'longrunTest':"Prueba de script de larga duración"
         },
 
         creationPerformance_numCtls_title:"Nº de formularios a crear",
@@ -93,7 +98,36 @@ define(function () {
             close: "Cerrar"
         },
 
-            // GridPropiedades
+        highchartsDemo: {
+            title: "Consumo de Frutas",
+            categories: ['Manzanas', 'Plátanos', 'Naranjas'],
+            yAxisTitle: "Piezas consumidas",
+            seriesNames: ["María", "Juan", "Promedio"]
+        },
+
+        todoSample: {
+            title: "Cosas por hacer",
+            emptyTaskMessage: "¿Qué hay que hacer?",
+            clearCompletedItemsTemplate: "Eliminar <%= numCompleted %> elemento<%= (numCompleted===0 || numCompleted>1)? 's' : '' %> completado<%= (numCompleted===0 || numCompleted>1)? 's' : '' %>",
+            clearCompletedItemsTitle: "Eliminar 0 elementos completados",
+            markAllTitle: "Marcar todos como completados"
+        },
+
+        wrapperapiSample: {
+            soundButtonTitle: "Reproducir sonido",
+            delayInSecondsTitle: "Retraso (segundos)",
+            showOnTopButtonTitle: "Mostrar por encima"
+        },
+
+        longrunTest: {
+            description: "Una técnica para evitar errores por scripts que se ejecutan durante mucho tiempo.",
+            countLabel: "Contador: <%= data.count %>",
+            badButton: "Iniciar contador (error)",
+            goodButton: "Iniciar contador (sin error)",
+            cancelButton: "Cancelar"
+        },
+
+        // GridPropiedades
         GridPropiedades:{
             propiedad_title:"Propiedad",
             valor_title:"Valor"

@@ -1,9 +1,10 @@
 /*global require, isc, APPINIT */
 
-require(['i18n', 'base/all', 'presenter/presenters', 'labs/labs', 'labs/widgets'], function (i18n, base, presenters, labs, widgets) {
+require(['i18n', 'base/all', 'presenter/presenters', 'labs/labs', 'labs/widgets', 'labs/wrapperapi'], function (i18n, base, presenters, labs, widgets, wrapperapi) {
     'use strict';
 
-    isc.Page.setTitle(i18n.appname);
+    //isc.Page.setTitle(i18n.appname);
+    wrapperapi.setTitle(i18n.appname);
 
     isc.Page.setEvent('unload', function () {
         base.events.destroy();
@@ -37,6 +38,8 @@ require(['i18n', 'base/all', 'presenter/presenters', 'labs/labs', 'labs/widgets'
         });
         mainPresenter.run();
         navigateToLab();
+
+        wrapperapi.webAppReady();
     };
 
     base.config.asyncUserInfo().then(runMainPresenter);

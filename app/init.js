@@ -1,13 +1,16 @@
+/*global window, document */
+/*jshint evil:true */
+
 // Definición de variables PREVIAS A LA CARGA de ISC y RequireJS
 var isc_useSimpleNames = false,
     isc_css3Mode = "supported",// "on", "off"
-    isomorphicDir = "/lib/isomorphic/v8.3p-pro/",
+    isomorphicDir = "../lib/isomorphic/v9.0p-pro/",
     requirejs = { // RequireJS configuration
         paths: {
-            underscore: "../../lib/underscore/lodash-1.2.0.min",
+            underscore: "../../lib/underscore/lodash.compat-1.3.1.min",
             signals: "../../lib/signals/signals-1.0.0.min",
             moment: "../../lib/moment/moment-2.0.0.min",
-            when: "../../lib/when/when-2.0.0"
+            when: "../../lib/when/when-2.2.1"
         }
 
 //        shim: {
@@ -183,9 +186,9 @@ var APPINIT = (function (window, document, undefined) {
         return path;
     }
 
-    function initLocale() {
+    function initLocale(localeArg) {
         var params = getAllParams(),
-            locale = params.locale || app.DEFAULT_LOCALE,
+            locale = localeArg || params.locale || app.DEFAULT_LOCALE,
             localeSuffix = (locale === "en") ? "" : "_" + locale,
             urlFwkI18n = isomorphicDir + "locales/frameworkMessages" + localeSuffix + ".properties",
             urlAppI18n = app.path.locales + "app_messages" + localeSuffix;
@@ -221,10 +224,17 @@ var APPINIT = (function (window, document, undefined) {
         var mainScriptTag = document.createElement('script'),
             file = mainScriptFile();
         mainScriptTag.async = true;
-        mainScriptTag.src = "/lib/requirejs/require-2.1.2.js";
+        mainScriptTag.src = "../lib/requirejs/require-2.1.2.js";
         mainScriptTag.setAttribute("data-main", file);
 
         document.body.appendChild(mainScriptTag);
+    };
+
+    app.loadSkin = function (skinName) {
+        var params = getAllParams(),
+            skin = params.skin || skinName || "Enterprise"; //"CepsaBase";
+
+        document.writeln("<script src=\"" + isomorphicDir + "skins/" + skin + "/load_skin.js\"><\/script>");
     };
 
     app.utils = {
@@ -237,7 +247,8 @@ var APPINIT = (function (window, document, undefined) {
         getFragmentParams: getFragmentParams,
         getAllParams: getAllParams,
         getAppDir: getAppDir,
-        getAppPath: getAppPath
+        getAppPath: getAppPath,
+        initLocale: initLocale
     };
 
     app.path = {

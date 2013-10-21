@@ -41,7 +41,10 @@ define(['data/config', 'base/rpc', 'when'], function (configData, rpc, when) {
 
     // Initialize ISC URLs to back-end services
     isc.RPCManager.actionURL = module.getProperty("IDACallURL");
-    isc.DataSource.addClassProperties({loaderURL: module.getProperty("dsLoaderURL")});
+    //isc.DataSource.addClassProperties({loaderURL: module.getProperty("dsLoaderURL")});
+    var loaderURL = module.getProperty("dsLoaderURL");
+    //loaderURL += "?locale=" + APPINIT.locale;
+    isc.DataSource.addClassProperties({loaderURL: loaderURL});
     isc.XMLTools.addClassProperties({httpProxyURL: module.getProperty("httpProxyURL")});
 
     // **** EJEMPLO de código que siempre es asíncrono pero que

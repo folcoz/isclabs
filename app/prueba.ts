@@ -29,11 +29,13 @@ class Greeter {
     }
 
     greet():string {
-        return "Hello, " + this.someone.firstname + " " + this.someone.lastname;
+        //return "Hello, " + this.someone.firstname + " " + this.someone.lastname;
+        return Greeter.greet(this.someone);
     }
 
     static greet(person: Person): string {
-        return new Greeter(person).greet();
+        //return new Greeter(person).greet();
+        return "Hello, " + person.firstname + " " + person.lastname;
     }
 }
 

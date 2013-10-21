@@ -5,7 +5,7 @@
  * - Comprobar su ID (automático). ID vs var
  * - Posicionamiento absoluto vs relativo
  * - Propiedades left, top, width, height
- * - Cambiar la posición con .moveTo()
+ * - Cambiar la posición con .moveTo() y .moveBy()
  * - .setXXX() vs .xxx = valor (ejemplo: .setHeight(44) vs .height = 44)
  * - Cambiar el título con .title + .markForRedraw()
  * - Cambiar el título con .setTitle()

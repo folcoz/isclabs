@@ -1,12 +1,12 @@
 /*global define, isc, require, APPINIT, Highcharts */
-/*jshint evil:true */
+/*jshint evil:false */
 
 /**
  * Modulo: labs/labs
  * Contiene toda la funcionalidad de los distintos laboratorios / demos de SmartClient
  * utilizados en la aplicacion.
  */
-define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "base/ui", "base/events"], function (i18n, _, models, config, moment, when, ui, events) {
+define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "base/ui", "base/events", "base/rpc", "labs/todos", "labs/wrapperapi"], function (i18n, _, models, config, moment, when, ui, events, rpc, todos, wrapperapi) {
     'use strict';
 
     var module = {};
@@ -447,6 +447,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             };
         };
         var externalSitesViewDef = {
+            autoDraw: false,
             width: "100%",
             height: "100%",
             layoutMargin: 8,
@@ -469,6 +470,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
 
             sitePanelDefaults: {
                 _constructor: isc.HTMLPane,
+                height: "*",
                 autoDraw: false,
                 contentsType: "page"
                 //showEdges: true
@@ -476,11 +478,20 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
 
             loadExternalSite: function (url) {
                 this.sitePanel.setContentsURL(url);
+                // Hack para arreglar problema con el dimensionamiento
+                // del iframe en Google Chrome
+                var that = this;
+                isc.Timer.setTimeout(function () {
+                    that.sitePanel.resizeBy(1, 1);
+                    that.sitePanel.resizeBy(-1, -1);
+                }, 100);
             },
 
             initWidget: function () {
                 ui.superInitWidget(this, arguments);
+
                 events.externalSiteRequested.add(this.loadExternalSite, this);
+
                 this.addAutoChild("toolbar", {
                     buttons: [
                         makeButton("Wikipedia", "http://www.wikipedia.org"),
@@ -539,14 +550,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                 canEdit: true,
                 canRemoveRecords: true,
                 showFilterEditor: true,
-                autoFetchData: true,
-                fields:[
-                    //{name:"Id"},
-                    {name:"Nombre"},
-                    {name:"Version", width: 40},
-                    {name:"Fecha_alta"},
-                    {name:"Email"}
-                ]
+                autoFetchData: true
             },
 
             addNewBtnDefaults: {
@@ -564,6 +568,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                 title: "Exportar como Excel",
                 click: function () {
                     this.grid.exportData({
+                        exportResults: true,
                         exportAs: 'ooxml', //"xls",
                         exportToClient: true,
                         exportDisplay: "download",
@@ -575,9 +580,11 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
             initWidget: function () {
                 ui.superInitWidget(this, arguments);
 
-                this.addAutoChild("grid", {
-                    dataSource: this.dataSource
-                });
+                var gridProps = {
+                    dataSource: this.dataSource,
+                    fields: this.fields
+                };
+                this.addAutoChild("grid", gridProps);
                 this.addAutoChild("addNewBtn", {grid: this.grid});
                 this.addAutoChild("exportBtn", {grid: this.grid});
             }
@@ -585,6 +592,79 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
         return isc.ClassFactory.defineClass("SqlTableCrudView", isc.VLayout).addProperties(sqlTableCrudViewDef);
     }
     var SqlTableCrudView = defineSqlTableCrudView();
+
+    function defineHighchartsCanvas() {
+        var highchartsCanvasDefinition = {
+
+            //redrawOnResize: false,
+            overflow: "hidden",
+
+            initWidget: function () {
+                ui.superInitWidget(this, arguments);
+                this.highcharts = this.highcharts || {
+                    chart: {
+                    },
+                    title: this.getID()
+                };
+            },
+
+            draw: function () {
+                if (!this.readyToDraw()) {
+                    return this;
+                }
+                this.Super("draw", arguments);
+                this._createChart();
+            },
+
+            getInnerHTML: function () {
+                return "<div id='" + this._chartContainerId() + "' style='width:100%;height:100%;'></div>";
+            },
+
+            _chartContainerId: function () {
+                return this.getID() + "_chart_container";
+            },
+
+            _createChart: function () {
+                this.highcharts.chart.renderTo = this._chartContainerId();
+                this._chart = new Highcharts.Chart(this.highcharts);
+            },
+
+            // extra functions -------------------------------
+
+            _destroyChart: function () {
+                if (this._chart) {
+                    this._chart.destroy();
+                    delete this._chart;
+                }
+            },
+
+            destroy: function () {
+                this._destroyChart();
+                this.Super("destroy", arguments);
+            },
+
+            redraw: function (reason) {
+                this._destroyChart();
+                this.Super("redraw", arguments);
+                this._createChart();
+            },
+
+            hide: function () {
+                this.Super("hide");
+                this._destroyChart();
+            },
+
+            show: function () {
+                var wasVisible = this.isVisible();
+                this.Super("show");
+                if (!wasVisible) {
+                    this.markForRedraw("show()");
+                }
+            }
+        };
+        return isc.defineClass("HighchartsCanvas", isc.Canvas).addProperties(highchartsCanvasDefinition);
+    }
+    var HighchartsCanvas = defineHighchartsCanvas();
 
     // *** LABORATORIOS ***
 
@@ -598,7 +678,8 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                 data: models.propiedadesConfig(config.props),
 
                 propiedadClick: function (prop) {
-                    isc.say("Doble click sobre grid " + this.ID + ":<br/>" + prop.propiedad + "=" + prop.valor);
+                    //isc.say("Doble click sobre grid " + this.ID + ":<br/>" + prop.propiedad + "=" + prop.valor);
+                    wrapperapi.showAlert("Doble click sobre grid " + this.ID + ":\n" + prop.propiedad + "=" + prop.valor);
                 }
             });
         },
@@ -665,7 +746,44 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
 
         sqlTableCRUD: function (container) {
             return SqlTableCrudView.create({
-                dataSource: models.ds.usuariosDS
+                dataSource: models.ds.usuariosDS,
+                fields:[
+                    //{name:"Id"},
+                    {name:"Nombre"},
+                    {name:"Version", width: 40},
+                    {name:"Fecha_alta"},
+                    {name:"Email"}
+                ]});
+        },
+
+        springDataSource: function (container) {
+            return SqlTableCrudView.create({
+                dataSource: module.sampleDataDS,
+                fields:[
+//                    {
+//                        type:"integer",
+//                        title:"Id",
+//                        name:"id",
+//                        primaryKey:true,
+//                        autoGenerated:true,
+//                        hidden:true
+//                    },
+                    {
+                        type:"text",
+                        title:"Texto",
+                        name:"text"
+                    },
+                    {
+                        type:"double",
+                        title:"Numero",
+                        name:"number"
+                    },
+                    {
+                        type:"date",
+                        title:"Fecha",
+                        name:"date"
+                    }
+                ]
             });
         },
 
@@ -1154,7 +1272,10 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                         showHover: true,
                         hoverHTML: function (record, value, rowNum, colNum, grid) {
                             return "Configuración del registro<br/><strong>" + record.text + "</strong>";
-                        }
+                        } /*,
+                        formatCellValue: function (value, record, rowNum, colNum, grid) {
+                            return "<button class='button'>Config.</button>";
+                        } */
                     },
                     {
                         name: "action",
@@ -1167,6 +1288,7 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
                             deshacer: "[SKINIMG]/actions/undo.png"
                         },
                         //showValueIconOnly: true,
+                        //canEdit: false,
                         editorType: "select",
                         editorValueMap: acciones,
                         recordClick: function (viewer, record, recordNum, field, fieldNum, value, rawValue) {
@@ -1327,76 +1449,363 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
         },
 
         highchartsDemo: function (container) {
-            return isc.HTMLPane.create({
+            var chart = HighchartsCanvas.create({
                 autoDraw: false,
+                redrawOnResize: true,
                 width: 600,
                 height: 400,
+                highcharts: {
+                    chart: {
+                        type: 'column',
+                        borderWidth: 3,
+                        events: {
+                            click: function () {
+                                // Actualiza los valores de las series con números aleatorios entre 0 y 10
+                                var series = this.series,
+                                    numPoints = series[0].points.length,
+                                    someValue = function () {
+                                        return Math.round(Math.random() * 10);
+                                    },
+                                    i,
+                                    pt1,
+                                    pt2,
+                                    avg;
+                                for (i = 0; i < numPoints; i++) {
+                                    pt1 = someValue();
+                                    pt2 = someValue();
+                                    avg = (pt1 + pt2) / 2;
+                                    series[0].points[i].update(pt1);
+                                    series[1].points[i].update(pt2);
+                                    series[2].points[i].update(avg);
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        text: i18n.highchartsDemo.title
+                    },
+                    xAxis: {
+                        categories: i18n.highchartsDemo.categories
+                    },
+                    yAxis: {
+                        title: {
+                            text: i18n.highchartsDemo.yAxisTitle
+                        }
+                    },
+                    series: [
+                        {
+                            name: i18n.highchartsDemo.seriesNames[0],
+                            data: [4, 5, 1]
+                        },
+                        {
+                            name: i18n.highchartsDemo.seriesNames[1],
+                            data: [5, 3, 7]
+                        },
+                        {
+                            name: i18n.highchartsDemo.seriesNames[2],
+                            data: [4.5, 4, 4],
+                            type: 'spline'
+                        }
+                    ]
+                }
+            });
+            return chart;
+        },
 
-                initWidget: function () {
-                    var chartSize;
-                    ui.superInitWidget(this, arguments);
-                    this.chartContainerID = this.ID + "_chart_container";
-                    chartSize = "width: " + this.getWidth() + "px; height: " + this.getHeight() + "px;";
-                    this.contents = "<div id='" + this.chartContainerID + "' style='" + chartSize + "'></div>";
+        todoSample: function (container) {
+            var EMPTY_TASK_MSG = i18n.todoSample.emptyTaskMessage,
+                todoList = todos.createTodoList(),
+                pendingRemovals = _.template(i18n.todoSample.clearCompletedItemsTemplate);
+
+            var layout = isc.VLayout.create({
+                autoDraw: false,
+                width: 522,
+
+                titleDefaults: {
+                    _constructor: isc.Label,
+                    width: "100%",
+                    height: 48,
+                    align: "center",
+                    contents: i18n.todoSample.title,
+                    wrap: false,
+                    styleName: "apptitle"
                 },
 
-                createChart: function () {
-                    this.chart = new Highcharts.Chart({
-                        chart: {
-                            renderTo: this.chartContainerID,
-                            type: 'bar'
-                        },
-                        title: {
-                            text: 'Consumo de Frutas'
-                        },
-                        xAxis: {
-                            categories: ['Manzanas', 'Plátanos', 'Naranjas']
-                        },
-                        yAxis: {
-                            title: {
-                                text: 'Piezas consumidas'
+                formDefaults: {
+                    _constructor: isc.DynamicForm,
+                    width: "100%",
+                    numCols: 3,
+                    fields: [
+                        {
+                            name: "newTask",
+                            type: "text",
+                            emptyDisplayValue: EMPTY_TASK_MSG,
+                            selectOnFocus: true,
+                            showTitle: false,
+                            colSpan: 3,
+                            width: "100%",
+                            textBoxStyle: "apptitle",
+                            editorEnter: function (form, item, value) {
+                                if (item.getDisplayValue() === item.emptyDisplayValue) {
+                                    item.emptyDisplayValue = "";
+                                    item.setValue("");
+                                    form.markForRedraw();
+                                }
+                            },
+                            editorExit: function (form, item, value) {
+                                if (!item.getValue()) {
+                                    item.emptyDisplayValue = EMPTY_TASK_MSG;
+                                    form.markForRedraw();
+                                }
                             }
                         },
-                        series: [{
-                            name: 'María',
-                            data: [1, 5, 4]
-                        }, {
-                            name: 'Juan',
-                            data: [5, 7, 3]
-                        }]
+                        {
+                            name: "markAll",
+                            height: 22,
+                            type: "checkbox",
+                            title: i18n.todoSample.markAllTitle,
+                            colSpan: 2,
+                            showTitle: false,
+                            changed: function (form, item, value) {
+                                this.form.parentElement.todosGrid.markAll(value);
+                            }
+                        },
+                        {
+                            name: "removeCompleted",
+                            type: "button",
+                            title: "",
+                            visible: false,
+                            startRow: false,
+                            endRow: false,
+                            colSpan: 1,
+                            width: "*",
+                            click: function () {
+                                this.form.parentElement.todosGrid.removeCompleted();
+                                this.form.getItem("markAll").setValue(false);
+                            }
+                        }
+                    ],
+                    saveOnEnter: true,
+                    submit: function () {
+                        var newTask = this.getItem("newTask");
+                        var txt = newTask.getValue();
+                        if (txt !== "") {
+                            // Save Item
+                            this.parentElement.todosGrid.addData(todos.createTodo({text: txt}));
+                            // Init text entry item
+                            newTask.setValue("");
+                        }
+                    }
+                },
+
+                spacerDefaults: {
+                    _constructor: isc.LayoutSpacer,
+                    height: 12
+                },
+
+                initWidget: function () {
+                    var that = this;
+                    ui.superInitWidget(that, arguments);
+
+                    this.addAutoChild("title");
+                    this.addAutoChild("form");
+                    this.addAutoChild("spacer");
+                    this.todosGrid = todos.createTodoView(todoList, {
+                        width: 522,
+                        height: "*"
+                    });
+                    this.addMember(this.todosGrid);
+
+                    this.todosGrid.todosUpdated.add(function (ev) {
+                        var boton = that.form.getItem("removeCompleted");
+                        boton.setTitle(pendingRemovals({numCompleted: ev.numCompleted}));
+                        boton[ev.numCompleted > 0? "show" : "hide"]();
                     });
                 },
 
-                redrawChart: function () {
-                    if (this.chart) {
-                        this.chart.redraw();
-                    }
-                    else {
-                        this.createChart();
-                    }
-                },
-
-                redraw: function () {
-                    if (this.chart) {
-                        this.chart.destroy();
-                        delete this.chart;
-                    }
-                    this.Super("redraw", arguments);
-                    this.createChart();
-                },
-
-                draw: function () {
-                    this.Super("draw", arguments);
-                    this.redrawChart();
-                },
-
                 destroy: function () {
-                    if (this.chart) {
-                        this.chart.destroy();
+                    if (this.todosGrid && this.todosGrid.dataSource && this.todosGrid.dataSource.todosUpdated) {
+                        this.todosGrid.dataSource.todosUpdated.dispose();
                     }
                     this.Super("destroy", arguments);
                 }
             });
+
+            layout.todosGrid.addData(todos.createTodo({text: "Start learning Backbone", done: true}));
+            layout.todosGrid.addData(todos.createTodo({text: "Start learning AngularJS"}));
+            layout.todosGrid.addData(todos.createTodo({text: "Start writing a Todo sample app using SmartClient", done: true}));
+            layout.todosGrid.addData(todos.createTodo({text: "Finish the Todo sample app"}));
+
+            return layout;
+        },
+
+        wrapperapiSample: function (container) {
+            var layout = isc.VLayout.create({
+                autoDraw: false,
+
+                soundButtonDefaults: {
+                    _constructor: isc.IButton,
+                    autoFit: true,
+                    title: i18n.wrapperapiSample.soundButtonTitle,
+                    click: function () {
+                        wrapperapi.playSound("outofspec");
+                    }
+                },
+
+                delayedShowOnTopFormDefaults: {
+                    _constructor: isc.DynamicForm,
+                    fields: [
+                        {
+                            name: "delayInSeconds",
+                            title: i18n.wrapperapiSample.delayInSecondsTitle,
+                            type: "integer",
+                            editorType: "spinner",
+                            defaultValue: 5,
+                            min: 1, max: 10, step: 1,
+                            width: 50
+                        },
+                        {
+                            name: "showOnTopButton",
+                            title: i18n.wrapperapiSample.showOnTopButtonTitle,
+                            type: "button",
+                            click: function (form, item) {
+                                var seconds = form.getItem("delayInSeconds").getValue();
+                                isc.Timer.setTimeout(function () {
+                                    wrapperapi.showOnTop(seconds * 1);
+                                    wrapperapi.playSound("horse");
+                                }, seconds * 1000);
+                            }
+                        }
+                    ]
+                },
+
+                initWidget: function () {
+                    ui.superInitWidget(this, arguments);
+                    this.addAutoChild("soundButton");
+                    this.addAutoChild("delayedShowOnTopForm");
+                }
+            });
+            return layout;
+        },
+
+        longrunTest: function (container) {
+            var MAX_ITERATIONS = 5000000;
+            var countLabelTemplate = _.template(i18n.longrunTest.countLabel, null, {variable: "data"});
+            var labLayout = isc.VLayout.create({
+                autoDraw: false,
+                membersMargin: 4,
+
+                descriptionDefaults: {
+                    _constructor: isc.HTMLFlow,
+                    height: 32,
+                    styleName: "labExplanation",
+                    contents: i18n.longrunTest.description
+                },
+
+                toolbarDefaults: {
+                    _constructor: isc.Toolbar,
+                    membersMargin: 4,
+                    buttons: [
+                        {
+                            name: "badButton",
+                            title: i18n.longrunTest.badButton,
+                            width: 180,
+                            click: function () {
+                                labLayout.count(MAX_ITERATIONS);
+                            }
+                        },
+                        {
+                            name: "goodButton",
+                            title: i18n.longrunTest.goodButton,
+                            width: 180,
+                            click: function () {
+                                labLayout.count2(MAX_ITERATIONS);
+                            }
+                        },
+                        {
+                            name: "cancelButton",
+                            title: i18n.longrunTest.cancelButton,
+                            width: 180,
+                            click: function () {
+                                labLayout.cancelCount();
+                            }
+                        }
+                    ]
+                },
+
+                countLabelDefaults: {
+                    _constructor: isc.Label,
+                    height: 30,
+                    autoFit: true,
+                    wrap: false,
+
+                    updateCount: function (n) {
+                        this.setContents(countLabelTemplate({count: n}));
+                    }
+                },
+
+                cancelled: false,
+
+                count: function (limit) {
+                    var i;
+                    this.cancelled = false;
+                    for (i = 0; i < limit; i++) {
+                        // useless
+                        if (i % 1000 === 0) {
+                            this.countLabel.updateCount(i);
+                        }
+                        // useless
+                        if (this.cancelled) {
+                            this.countLabel.updateCount(i);
+                            return;
+                        }
+                    }
+                    this.countLabel.updateCount(limit);
+                },
+
+                count2: function (limit) {
+                    var that = this;
+                    that.cancelled = false;
+
+                    function countBlock(start, blockSize, limit) {
+                        var i,
+                            n,
+                            finished;
+                        for (i = 0; i < blockSize; i++) {
+                            n = start + i;
+                            finished = that.cancelled || n >= limit;
+                            if (finished) {
+                                that.countLabel.updateCount(n);
+                                return;
+                            }
+                            if (n % blockSize === 0) {
+                                that.countLabel.updateCount(n);
+                            }
+                        }
+                        if (!finished) {
+                            _.defer(countBlock, n, blockSize, limit);
+                        }
+                    }
+
+                    countBlock(0, 5000, limit);
+                },
+
+                cancelCount: function () {
+                    this.cancelled = true;
+                    this.countLabel.updateCount(0);
+                },
+
+                initWidget: function () {
+                    ui.superInitWidget(this, arguments);
+
+                    this.addAutoChild("description");
+                    this.addAutoChild("toolbar");
+                    this.addAutoChild("countLabel");
+                    this.countLabel.updateCount(0);
+                }
+            });
+
+            return labLayout;
         }
     };
 
@@ -1428,13 +1837,17 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
         makeLab("viewLoaderDemo"),
         makeLab("treeDemo"),
         makeLab("sqlTableCRUD"),
+        makeLab("springDataSource"),
         makeLab("dataBinding"),
         makeLab("dynamicContents"),
         makeLab("treeDataBinding"),
         makeLab("windowDemo"),
         makeLab("listGridDemo"),
         makeLab("eventBusDemo"),
-        makeLab("highchartsDemo")
+        makeLab("highchartsDemo"),
+        makeLab("todoSample"),
+        makeLab("wrapperapiSample"),
+        makeLab("longrunTest")
     ];
 
     var labsDS = isc.DataSource.create({
@@ -1460,11 +1873,49 @@ define(["i18n", "underscore", "model/models", "base/config", "moment", "when", "
         ]
     });
 
+    rpc.loadDS("sampleDataDS").then(function (dsNames) {
+        //console.log(dsNames);
+        module.sampleDataDS = isc.DataSource.get("sampleDataDS");
+    });
+
+//    var sampleDataDS = isc.RestDataSource.create({
+//        allowAdvancedCriteria:true,
+//        operationBindings:[
+//            {
+//                operationType:"fetch"
+//            }
+//        ],
+//        fields:[
+//            {
+//                type:"text",
+//                title:"Texto",
+//                name:"text"
+//            },
+//            {
+//                type:"double",
+//                title:"Numero",
+//                name:"number"
+//            },
+//            {
+//                type:"date",
+//                title:"Fecha",
+//                name:"date"
+//            }
+//        ],
+//        ID:"sampleDataDS",
+//        dataURL: config.getProperty("restURL"),
+//        dataFormat: "json",
+//        jsonPrefix: "",
+//        jsonSuffix: ""
+//    });
+
     module = {
         labs: labs,
         createCanvas: createLabCanvas,
         ds: labsDS,
-        GridPropiedades: GridPropiedades
+        GridPropiedades: GridPropiedades,
+        HighchartsCanvas: HighchartsCanvas
+        //sampleDataDS: sampleDataDS
     };
 
     return module;

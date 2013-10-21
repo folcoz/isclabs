@@ -19,12 +19,17 @@ define(function () {
             IDACallURL: servidorJavaIsomorphic + "IDACall",
             httpProxyURL: servidorJavaIsomorphic + "HttpProxy",
             dsLoaderURL: servidorJavaIsomorphic + "DataSourceLoader",
+            restURL: servidorJavaIsomorphic + "rest",
             fetchUserInfoActionURL: APPINIT.path.testData + "userinfo.json",
             fetchSampleItemsActionURL: APPINIT.path.testData + "sample_items.json",
             fechaCarga: new Date(),
             homeCepsa:"http://www.cepsa.com",
             usarServicioCaro: false,
-            mensaje: "hola, mundo"
+            mensaje: "hola, mundo",
+            sonidos: {
+                horse: "horse.mp3",
+                outofspec: "outofspec.wav"
+            }
         },
 
         desar: {

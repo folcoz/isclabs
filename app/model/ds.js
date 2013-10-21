@@ -22,7 +22,7 @@ define(['base/config'], function (config) {
     module.usuariosDS = isc.DataSource.create({
         allowAdvancedCriteria:false,
         serverType:"sql",
-        ID:"usuarios",
+        ID:"usuariosDS",
         fields: [
             {name: "Id", type: "sequence", title: "Identificador", primaryKey: true},
             {name: "Version", type: "integer", title: "Versión"},
